@@ -107,38 +107,33 @@ int main() {
 
 	// Vertex input
 	float vertices[] = {
-		0.5f,  0.5f, 0.0f,	// top right
-		0.5f, -0.5f, 0.0f,	// bottom right
-	   -0.5f, -0.5f, 0.0f,	// bottom left
-	   -0.5f,  0.5f, 0.0f	// top left
-	};
-	unsigned int indices[] = {	// note that we start from 0!
-		0, 1, 3,// first triangle
-		1, 2, 3 // second triangle
+	    0.0f, -0.5f, 0.0f, // bottom left
+		0.5f, -0.5f, 0.0f, // bottom right
+		0.0f,  0.5f, 0.0f, // top middle
+		// Second triangle
+		0.5f, -0.5f, 0.0f, // bottom right
+		0.0f,  0.5f, 0.0f, // top middle
+	    0.5f,  0.5f, 0.0f  // top right
 	};
 	// Vertex Buffer Object
-	unsigned int VBO, VAO, EBO;
-	// TODO: Describe me
+	unsigned int VBO, VAO;
+	// Creates memory on GPU
 	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
 	// Bind VAO
 	glBindVertexArray(VAO);
-	// Creates memory on GPU
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 	// Binds buffer to GL_ARRAY_BUFFER, makes it the currently active buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	// Copies float array of vertices into memory buffer
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	// Binds buffer to GL_ARRAY_BUFFER, makes it the currently active buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	// Copies float array of elements into memory buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// Tells OpenGL how the data should be interpreted (Pg. 34 on LearnOpenGL)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	// Enable vertex attributes
 	glEnableVertexAttribArray(0);
 	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// Unbind VAO
+	glBindVertexArray(0);
 	// Draw triangles in wireframe
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
@@ -154,10 +149,9 @@ int main() {
 		glUseProgram(shaderProgram);
 		// Draws primitives using the currently active shader, the previously defined 
 		// vertex attribute configuration and with the VBO’s vertex data(indirectly bound via the VAO)
-		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//glBindVertexArray(0);
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
